@@ -3,29 +3,41 @@ import {useEffect, useRef, useState} from "react";
 
 export default function HealthPanel({ systemHealth }) {
 
+  //Referencja do timera interwałów, leci okreslony czaspotem reset do 0 i znowu
   const ref = useRef(null);
+
+  //State na serwerowe node'y zeby updateowac status i styl na bazie requesta
   const [nodes, setNodes] = useState(systemHealth.nodes);
 
-  const checkHealth = () => {
 
+  // Asynchroniczna metoda do sprawdzania serwer po serwerze endpointa /health
+  // health zwraca tylko 200 jak działa
+  const checkHealth = async () => {
     for(let i = 0; i < 3; i++) {
-      const request = fetch(`http://localhost:800${i}/health`, {
-        method: "GET",
-      }).then(res => {
-        if (res.status === 200) {
+      try{
+        //Request port po porcie 8000, 8001, 8002
+        const request = await fetch(`http://localhost:800${i}/health`, {
+          method: "GET",
+        });
+
+        //Jak działa serwer update state = "OK"
+        if (request.status === 200) {
           console.log(`Server ${i+1} działa, super`);
-          systemHealth.nodes[i].state = "OK"
-        }else{
-          console.log(`Server ${i+1} nie działa, niedobrze`);
-          systemHealth.nodes[i].state = "ERROR"
+          systemHealth.nodes[i].state = "OK";
         }
+      }catch(error){
+        //Jak nie działa (Network error) to state = "ERROR"
+        console.log(`Server ${i+1} nie działa, niedobrze`);
+        systemHealth.nodes[i].state = "ERROR";
+      }finally {
+        //finalny update stanu node'ów
         setNodes([...systemHealth.nodes]);
-      })
+      }
     }
   }
 
   useEffect(() => {
-    ref.current = setInterval(checkHealth,60*1000);
+    ref.current = setInterval(checkHealth,5 * 1000 * 60);
 
     return () => {
       if(ref.current) {
