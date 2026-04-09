@@ -9,7 +9,7 @@ const createServer = (ID, port) =>{
         origin: 'https://glosowanie.alexandria-pcz.com/',
         optionsSuccessStatus: 200
     }
-    app.use(cors());
+    app.use(cors(corsOptions));
 
     const db = new Database(ID);
 
