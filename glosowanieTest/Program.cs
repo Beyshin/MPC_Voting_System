@@ -8,7 +8,6 @@ namespace TajneGlosowanie
         static void Main(string[] args)
         {
             // KROK 1: Definiujemy liczby pierwsze przypisane do konkretnych kandydatów.
-            // Pamiętaj: muszą być większe niż maksymalna możliwa liczba głosujących!
             BigInteger liczbaPierwszaKandydataA = 11; 
             BigInteger liczbaPierwszaKandydataB = 13; 
             BigInteger liczbaPierwszaKandydataC = 17; 
@@ -24,7 +23,7 @@ namespace TajneGlosowanie
 
             Console.WriteLine("Rozpoczynamy głosowanie...");
 
-            // KROK 2 & 3: Wyborcy oddają głosy. 
+            // KROK 2/3: Wyborcy oddają głosy.
             // Indeks 0 to Kandydat A, 1 to Kandydat B, 2 to Kandydat C.
             system.OddajGlos(0); // Głos na A
             system.OddajGlos(0); // Głos na A
@@ -74,18 +73,17 @@ namespace TajneGlosowanie
 
         public void OddajGlos(int wybranyKandydatIndeks)
         {
-            // 1. Ustawienie jedynek i zer.
-            // Jeśli głosujemy na kandydata nr 1 (indeks 0), to jego wartość wynosi 1, a reszty 0.
+
             BigInteger[] wartosciGlosuDlaKandydatow = new BigInteger[_liczbyPierwszeKandydatow.Length];
             for (int i = 0; i < wartosciGlosuDlaKandydatow.Length; i++)
             {
                 wartosciGlosuDlaKandydatow[i] = (i == wybranyKandydatIndeks) ? 1 : 0;
             }
 
-            // 2. Znalezienie jednej wielkiej liczby X, która ukrywa w sobie te zera i jedynki.
+
             BigInteger zakodowanyGlosX = ChinskieTwierdzenieOResztach(_liczbyPierwszeKandydatow, wartosciGlosuDlaKandydatow);
 
-            // 3. Rozbicie zaszyfrowanego głosu X na 3 "tajne kawałki". 
+            // 3. Rozbicie zaszyfrowanego głosu X na 3 kawałki
             // Kawałek 1 i 2 to całkowicie losowe liczby z zakresu od 0 do M.
             BigInteger fragmentGlosuDlaSerwera1 = LosujDuzaLiczbe(_iloczynWszystkichLiczbPierwszychM);
             BigInteger fragmentGlosuDlaSerwera2 = LosujDuzaLiczbe(_iloczynWszystkichLiczbPierwszychM);
