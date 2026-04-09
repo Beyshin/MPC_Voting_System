@@ -4,6 +4,11 @@ const Database = require('./services/db');
 
 const createServer = (ID, port) =>{
     const app = express();
+
+    const corsOptions = {
+        origin: 'https://glosowanie.alexandria-pcz.com/',
+        optionsSuccessStatus: 200
+    }
     app.use(cors());
 
     const db = new Database(ID);
