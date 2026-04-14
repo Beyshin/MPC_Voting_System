@@ -5,32 +5,49 @@ import {
     systemHealth,
 } from "../data/dashboardData";
 import {useLocation} from "react-router-dom";
+import Layout from "../components/layout/Layout.jsx";
+import {useState} from "react";
 
 export default function ElectionPage() {
     const location = useLocation();
-    const electionTitle = location.state;
+    const election = location.state;
+    const [selected, setSelected] = useState(null);
+
+
+    const sendVote = async() =>{
+        for(let i = 0; i<3; i++){
+            const response = await fetch(`http://localhost:800${i}/vote`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    votingId: election.id,
+                    candidateId: selected.id
+                })
+            })
+
+            if(response.ok){
+                console.log(`Server ${i+1} zwrocił odpowiedz`);
+            }
+        }
+
+        console.log(election.id, selected.id)
+    }
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-page px-0 text-slate-900">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(45,86,198,0.14),transparent_35%),radial-gradient(circle_at_88%_24%,rgba(15,118,110,0.2),transparent_28%),linear-gradient(180deg,#f4f7fc_0%,#eef2f8_100%)]" />
-
-            <div className="relative mx-auto grid  lg:grid-cols-[280px_minmax(0,1fr)]">
-                <div className="hidden lg:block">
-                    <Sidebar items={navigationItems} />
-                </div>
-
-                <main className="px-4 py-5 sm:px-6 lg:px-8">
-                    <section className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_360px]">
-
-                            <header className="mb-6 animate-fade-in-up">
-                            <h1 className="font-display text-4xl font-bold text-slate-900 sm:text-[2.5rem]">
-                                {electionTitle}
-                            </h1>
-                             </header>
-                        <HealthPanel systemHealth={systemHealth} />
-                    </section>
-                </main>
-            </div>
-        </div>
+       <Layout title={election.title}>
+          <div className="animate-fade-in-up rounded-xl border bg-white p-5 shadow-card sm:p-6 border-l-4">
+              {election.candidates.map((candidate) => (
+                  <div className="flex-col">
+                      <label className="p-3" key={candidate.id} htmlFor={candidate.id}>{candidate.firstName + " " + candidate.lastName}</label>
+                      <input type="checkbox" checked={selected?.id === candidate.id} name={election.id} id={candidate.id} value={candidate.id} onChange={e => setSelected(candidate)} />
+                  </div>
+              ))}
+              <button type="button" onClick={sendVote}>
+                  ZAGŁOSUJ
+              </button>
+          </div>
+       </Layout>
     );
 }

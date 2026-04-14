@@ -47,7 +47,7 @@ export default function ElectionCard({ election, isPrimary = false }) {
         <button
           type="button"
           className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-brand-700 text-white hover:bg-brand-800"
-          onClick={() => navigate("/election", {state: election.title})}
+          onClick={() => navigate("/election", {state: election})}
         >
           Przejdź do karty głosowania
           <span>&#8594;</span>

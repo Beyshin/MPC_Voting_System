@@ -12,6 +12,18 @@ export const elections = [
     title: "Wybory Krajowe 2025",
     description: "Wybory do Sejmu RP, które odbędą się w kwietniu 2025 roku. ",
     status: "Aktywne",
+    candidates: [
+      {
+        id: 1,
+        firstName: "Adam",
+        lastName: "Pierwszy"
+      },
+      {
+        id: 2,
+        firstName: "Paweł",
+        lastName: "Drugi"
+      }
+    ]
   },
   {
     id: "lokalne-glosowanie-420",
@@ -20,6 +32,23 @@ export const elections = [
     title: "Referendum Spółdzielcze Częstochowa",
     description: "",
     status: "Aktywne",
+    candidates: [
+      {
+        id: 1,
+        firstName: "Adam",
+        lastName: "Pierwszy"
+      },
+      {
+        id: 2,
+        firstName: "Paweł",
+        lastName: "Drugi"
+      },
+      {
+        id: 3,
+        firstName: "Mariusz",
+        lastName: "Trzeci"
+      }
+    ]
   },
 ];
 

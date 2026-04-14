@@ -5,6 +5,7 @@ const Database = require('./services/db');
 const createServer = (ID, port) =>{
     const app = express();
     app.use(cors());
+    app.use(express.json());
 
     const db = new Database(ID);
 
@@ -86,6 +87,12 @@ const createServer = (ID, port) =>{
 
     app.get('/health', (req, res) => {
         res.status(200).send("Server healthy");
+    })
+
+
+    app.post('/vote', (req, res) => {
+        console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateId :` + req.body.candidateId + `\n\tvotingId :` + req.body.votingId);
+        res.status(200).send();
     })
 
     return app;
