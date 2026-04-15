@@ -22,6 +22,18 @@ class Database {
     }
 
 
+    voteUpdate(votingId, userId, value){
+        try{
+            const query = this.connection.prepare(
+                `UPDATE data SET poll_id = ?, user_id = ?, value = ? WHERE poll_id = ? AND user_id = ?`
+            )
+            query.run(votingId, userId, value, votingId, userId);
+            console.log("Pomyslnie zaaktualizowano głos");
+        }catch(err){
+            console.log(`Bład przy update'cie głosu | ${err}`);
+        }
+    }
+
     voteSelect(votingId, userId){
         const query = this.connection.prepare(
             `SELECT * FROM data WHERE user_id = ? AND poll_id = ?`,

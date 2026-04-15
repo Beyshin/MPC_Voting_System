@@ -15,6 +15,7 @@ export default function ElectionPage() {
 
 
     const sendVote = async() =>{
+        console.log(`Wartośc nacisnieta: ${selected}`)
         for(let i = 0; i<3; i++){
             const response = await fetch(`http://localhost:800${i}/vote`, {
                 method: "POST",
@@ -23,7 +24,7 @@ export default function ElectionPage() {
                 },
                 body: JSON.stringify({
                     votingId: election.id,
-                    candidateId: selected.id
+                    candidate_val: selected
                 })
             })
 
@@ -38,10 +39,10 @@ export default function ElectionPage() {
     return (
        <Layout title={election.title}>
           <div className="animate-fade-in-up rounded-xl border bg-white p-5 shadow-card sm:p-6 border-l-4">
-              {election.candidates.map((candidate) => (
+              {election.candidates.map((candidate, idx) => (
                   <div className="flex-col">
                       <label className="p-3" key={candidate.id} htmlFor={candidate.id}>{candidate.firstName + " " + candidate.lastName}</label>
-                      <input type="checkbox" checked={selected?.id === candidate.id} name={election.id} id={candidate.id} value={candidate.id} onChange={e => setSelected(candidate)} />
+                      <input type="checkbox" checked={selected === election.p_val[idx]} name={election.id} id={candidate.id} value={election.p_val[idx]} onChange={e => setSelected(election.p_val[idx])} />
                   </div>
               ))}
               <button type="button" onClick={sendVote}>

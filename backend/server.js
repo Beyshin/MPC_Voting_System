@@ -93,20 +93,19 @@ const createServer = (ID, port) =>{
 
         //TODO: ZMIENIC PLACEHOLDERY USER_ID (123) NA USER_ID Z FRONTU
         //const userId = req.body.userId;
-        const candidateId = req.body.candidateId;
+        const candidateVal = req.body.candidate_val;
         const votingId = req.body.votingId;
         let rows = db.voteSelect(votingId, 123);
 
         if(rows.length > 0){
             //jesli ktos juz zagłosował
-            //TODO: UPDATE VOTE
-            console.log("Tutaj musi byc UPDATE głosu");
+            db.voteUpdate(votingId, 123, candidateVal);
         }else{
             //jezeli ktos glosuje pierwszy raz
-            db.voteInsert(votingId, 123, candidateId);
+            db.voteInsert(votingId, 123, candidateVal);
         }
 
-        //console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateId :` + req.body.candidateId + `\n\tvotingId :` + req.body.votingId);
+        //console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateVal :` + req.body.candidateVal + `\n\tvotingId :` + req.body.votingId);
         res.status(200).send();
     })
 

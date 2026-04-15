@@ -23,7 +23,8 @@ export const elections = [
         firstName: "Paweł",
         lastName: "Drugi"
       }
-    ]
+    ],
+    p_val: [5,7]
   },
   {
     id: "lokalne-glosowanie-420",
@@ -48,7 +49,8 @@ export const elections = [
         firstName: "Mariusz",
         lastName: "Trzeci"
       }
-    ]
+    ],
+    p_val: [5,7, 11]
   },
 ];
 
