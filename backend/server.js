@@ -82,8 +82,6 @@ const createServer = (ID, port) =>{
     })
 
 
-    //TODO: Dodac metode POST np /insertData, przyjmująca parametry {poll_id, user_id, value}
-
 
     app.get('/health', (req, res) => {
         res.status(200).send("Server healthy");
@@ -91,7 +89,24 @@ const createServer = (ID, port) =>{
 
 
     app.post('/vote', (req, res) => {
-        console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateId :` + req.body.candidateId + `\n\tvotingId :` + req.body.votingId);
+        console.log(`POST /vote | Server: ${ID}`);
+
+        //TODO: ZMIENIC PLACEHOLDERY USER_ID (123) NA USER_ID Z FRONTU
+        //const userId = req.body.userId;
+        const candidateId = req.body.candidateId;
+        const votingId = req.body.votingId;
+        let rows = db.voteSelect(votingId, 123);
+
+        if(rows.length > 0){
+            //jesli ktos juz zagłosował
+            //TODO: UPDATE VOTE
+            console.log("Tutaj musi byc UPDATE głosu");
+        }else{
+            //jezeli ktos glosuje pierwszy raz
+            db.voteInsert(votingId, 123, candidateId);
+        }
+
+        //console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateId :` + req.body.candidateId + `\n\tvotingId :` + req.body.votingId);
         res.status(200).send();
     })
 

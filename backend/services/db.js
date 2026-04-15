@@ -21,6 +21,29 @@ class Database {
         ).run();
     }
 
+
+    voteSelect(votingId, userId){
+        const query = this.connection.prepare(
+            `SELECT * FROM data WHERE user_id = ? AND poll_id = ?`,
+        )
+
+        return query.all(userId, votingId);
+    }
+
+    voteInsert(votingId, userId, value){
+        try {
+            const query = this.connection.prepare(
+                `INSERT INTO data(poll_id, user_id, value)
+                 VALUES (?, ?, ?)`
+            )
+            query.run(votingId, userId, value);
+            console.log(`Poprawnie wstawiono głos ${votingId} ${userId} ${value}!`)
+        }catch(err){
+            console.log(`Bład podczas wstawiania głosu | ${err}`)
+            return;
+        }
+    }
+
     testInsert(){
         const query = this.connection.prepare(
             `INSERT INTO data(poll_id, user_id, value) VALUES (?,?,?)`
