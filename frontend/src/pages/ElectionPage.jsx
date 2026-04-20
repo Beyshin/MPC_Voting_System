@@ -1,9 +1,3 @@
-import HealthPanel from "../components/dashboard/HealthPanel";
-import Sidebar from "../components/layout/Sidebar";
-import {
-    navigationItems,
-    systemHealth,
-} from "../data/dashboardData";
 import {useLocation} from "react-router-dom";
 import Layout from "../components/layout/Layout.jsx";
 import {useState} from "react";

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const Database = require('./services/db');
+const Database = require('./services/secondaryDb');
 
 const createServer = (ID, port) =>{
     const app = express();

@@ -1,4 +1,4 @@
-const DB = require("better-sqlite3");
+const SecondaryDb = require("better-sqlite3");
 const path = require("path");
 
 
@@ -6,7 +6,7 @@ class Database {
     constructor(serverID){
         const dbPath = path.join(__dirname, '..', '/data', `server${serverID}.db`);
         this.id = serverID;
-        this.connection = new DB(dbPath);
+        this.connection = new SecondaryDb(dbPath);
         this.init();
     }
 

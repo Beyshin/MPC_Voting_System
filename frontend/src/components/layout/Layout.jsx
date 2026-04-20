@@ -1,7 +1,6 @@
 import Sidebar from "./Sidebar.jsx";
-import {elections, navigationItems, systemHealth} from "../../data/dashboardData.js";
+import {navigationItems, systemHealth} from "../../data/dashboardData.js";
 import DashboardHeader from "../dashboard/DashboardHeader.jsx";
-import ElectionCard from "../dashboard/ElectionCard.jsx";
 import HealthPanel from "../dashboard/HealthPanel.jsx";
 
 
