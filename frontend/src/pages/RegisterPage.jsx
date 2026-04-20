@@ -1,5 +1,6 @@
-import {useNavigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import {useState} from "react";
+import {useAuth} from "../context/AuthContext.jsx";
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -7,6 +8,12 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [checkPassword, setCheckPassword] = useState("");
     const [email, setEmail] = useState("");
+
+    const {user} = useAuth();
+
+    if(user) {
+        return(<Navigate to="/" replace></Navigate>);
+    }
 
     const registerUser = (e) => {
         e.preventDefault();

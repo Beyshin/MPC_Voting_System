@@ -5,6 +5,7 @@ import {
   VerifyIcon,
 } from "../icons/SystemIcons";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const navIconMap = {
   dashboard: HomeIcon,
@@ -15,6 +16,22 @@ const navIconMap = {
 
 export default function Sidebar({ items }) {
     const navigate = useNavigate();
+    const {user, setUser} = useAuth();
+
+    const logout = async () =>{
+        try {
+             await fetch("http://localhost:8005/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (user) {
+                setUser(null);
+            }
+        }catch(err){
+            console.log("Błąd podczas wylogowywania: " + err)
+        }
+    }
 
   return (
     <aside className="panel-border relative flex min-h-screen flex-col overflow-hidden rounded-r-2xl bg-white/90 px-5 py-7 backdrop-blur">
@@ -69,7 +86,7 @@ export default function Sidebar({ items }) {
           type="button"
           className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 transition hover:text-rose-700"
         >
-          <span>Wyloguj sesje</span>
+          <span onClick={logout}>Wyloguj sesje</span>
         </button>
       </div>
     </aside>

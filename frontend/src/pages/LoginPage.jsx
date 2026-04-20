@@ -1,28 +1,33 @@
-import {useNavigate} from "react-router-dom";
-import {useCallback, useState} from "react";
+import {Navigate, useNavigate} from "react-router-dom";
+import {useState} from "react";
+import {useAuth} from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
     const navigate = useNavigate();
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+    const {user, setUser} = useAuth();
+
+    if (user) {
+        return <Navigate to="/" replace />;
+    }
 
     const loginUser =  (e) => {
         e.preventDefault();
         try{
-            const req = fetch("http://localhost:8005/loginUser", {
+            fetch("http://localhost:8005/loginUser", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     login: login,
                     password: password
                 })
             }).then(async res => {
                 if(res.status === 200) {
-                    const payload = await res.json();
-                    console.log(payload.user_id);
-                    navigate("/" )
+                    setUser({login: login});
                 }else{
                     console.log(res.status);
                 }
