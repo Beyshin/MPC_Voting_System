@@ -84,9 +84,6 @@ class Database {
         )
         return query.all(pollId);
     }
-
-
-
 }
 
 

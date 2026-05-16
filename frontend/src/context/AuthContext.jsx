@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
             } finally {
                 setIsLoading(false);
             }
+
         };
 
         checkLoginStatus();

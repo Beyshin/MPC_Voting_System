@@ -89,25 +89,35 @@ const createServer = (ID, port) =>{
 
 
     app.post('/vote', (req, res) => {
-        console.log(`POST /vote | Server: ${ID}`);
+        // Upewnij się, że w pliku głównym masz dodane: app.use(express.json());
 
-        //TODO: ZMIENIC PLACEHOLDERY USER_ID (123) NA USER_ID Z FRONTU
-        //const userId = req.body.userId;
-        const candidateVal = req.body.candidate_val;
+        // Pobieramy prawdziwe dane wysłane z Reacta
+        const userId = req.body.userId; // <--- Teraz pobieramy prawdziwe ID użytkownika
+        const candidateVal = req.body.value; // <--- Zmiana z candidate_val na value!
         const votingId = req.body.votingId;
-        let rows = db.voteSelect(votingId, 300);
 
-        if(rows.length > 0){
-            //jesli ktos juz zagłosował
-            db.voteUpdate(votingId, 300, candidateVal);
-        }else{
-            //jezeli ktos glosuje pierwszy raz
-            db.voteInsert(votingId, 300, candidateVal);
+        console.log(`POST /vote | Server: ${ID} | User: ${userId} | Vote: ${candidateVal}`);
+
+        // Zabezpieczenie przed brakującymi danymi (żeby nie wpisać znowu null'a)
+        if (candidateVal === undefined || !userId) {
+            return res.status(400).send({ message: "Brak wymaganych danych (userId lub value)" });
         }
 
-        //console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateVal :` + req.body.candidateVal + `\n\tvotingId :` + req.body.votingId);
+        // Sprawdzamy czy TEN konkretny użytkownik już głosował w TYCH wyborach
+        let rows = db.voteSelect(votingId, userId);
+
+        if (rows.length > 0) {
+            // Jeśli ktoś już zagłosował, nadpisujemy jego fragment
+            db.voteUpdate(votingId, userId, candidateVal);
+            console.log(`Zaktualizowano głos dla usera: ${userId}`);
+        } else {
+            // Jeżeli ktoś głosuje pierwszy raz
+            db.voteInsert(votingId, userId, candidateVal);
+            console.log(`Dodano nowy głos dla usera: ${userId}`);
+        }
+
         res.status(200).send();
-    })
+    });
 
     return app;
 }

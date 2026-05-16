@@ -6,6 +6,7 @@ import {
 } from "../icons/SystemIcons";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
+import {useEffect} from "react";
 
 const navIconMap = {
   dashboard: HomeIcon,
@@ -17,6 +18,9 @@ const navIconMap = {
 export default function Sidebar({ items }) {
     const navigate = useNavigate();
     const {user, setUser} = useAuth();
+
+
+
 
     const logout = async () =>{
         try {
@@ -49,8 +53,14 @@ export default function Sidebar({ items }) {
             System MPC
           </p>
           <p className="text-xs font-medium text-slate-500">
-            USER-ID: 69DA-1337
+            USER-ID: {user.id}
           </p>
+            <p className="text-xs font-medium text-slate-500">
+                LOGIN: {user.login}
+            </p>
+            <p className="text-xs font-medium text-slate-500">
+                TYPE: {user.privilegeLevel > 1 ? "admin" : "user"}
+            </p>
         </div>
       </div>
 

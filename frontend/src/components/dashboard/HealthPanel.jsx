@@ -89,28 +89,6 @@ export default function HealthPanel({ systemHealth }) {
         </section>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-brand-50 p-4 shadow-card">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-full bg-white p-1.5 text-brand-700 shadow-soft">
-            <SupportIcon className="h-4.5 w-4.5" />
-          </div>
-          <div>
-            <h4 className="text-lg font-semibold text-slate-900">
-              Potrzebujesz pomocy?
-            </h4>
-            <p className="mt-1 text-sm text-slate-500">
-              Jesli masz problem z oddaniem glosu, skontaktuj sie z
-              administratorem.
-            </p>
-            <button
-              type="button"
-              className="mt-3 text-sm font-semibold text-brand-700 hover:text-brand-900"
-            >
-              Zglos problem techniczny
-            </button>
-          </div>
-        </div>
-      </section>
     </aside>
   );
 }

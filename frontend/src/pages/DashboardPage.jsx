@@ -7,25 +7,30 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const loadElections = async () => {
-            try {
-                const response = await fetch("http://localhost:8005/elections");
-                if (!response.ok) {
-                    throw new Error("Błąd przy pobieraniu wyborów");
-                }
-                const data = await response.json();
-                setElections(data);
-            } catch (err) {
-                console.error(err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
+    const loadElections = async () => {
+        try {
+            const response = await fetch("http://localhost:8005/elections");
+            if (!response.ok) {
+                throw new Error("Błąd przy pobieraniu wyborów");
             }
-        };
+            const data = await response.json();
+            setElections(data);
+        } catch (err) {
+            console.error(err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    useEffect(() => {
 
         loadElections();
     }, []);
+
+
+
 
     return (
         <Layout title="Aktywne głosowania">
@@ -37,7 +42,7 @@ export default function DashboardPage() {
                 <p>Brak dostępnych wyborów.</p>
             ) : (
                 elections.map((election) => (
-                    <ElectionCard key={election.id} election={election} />
+                    <ElectionCard key={election.id} election={election} callback={loadElections} />
                 ))
             )}
         </Layout>

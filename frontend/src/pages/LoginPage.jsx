@@ -12,10 +12,10 @@ export default function LoginPage() {
         return <Navigate to="/" replace />;
     }
 
-    const loginUser =  (e) => {
+    const loginUser = async (e) => {
         e.preventDefault();
         try{
-            fetch("http://localhost:8005/loginUser", {
+            const res = await fetch("http://localhost:8005/loginUser", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -25,13 +25,19 @@ export default function LoginPage() {
                     login: login,
                     password: password
                 })
-            }).then(async res => {
-                if(res.status === 200) {
-                    setUser({login: login});
-                }else{
-                    console.log(res.status);
-                }
             })
+
+            if (res.ok) {
+                const response = await fetch('http://localhost:8005/checkAuth', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data.user);
+                }
+            }
 
         }catch(err){
             console.log(err);

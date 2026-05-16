@@ -1,19 +1,27 @@
 import { useState } from "react";
 import { LockIcon } from "../icons/SystemIcons";
 import { useNavigate } from 'react-router-dom';
+import {useAuth} from "../../context/AuthContext.jsx";
 
 function StatusBadge({ status }) {
-  return (
+  return status === "Aktywne" ? (
     <div className="rounded-lg bg-slate-50 px-5 py-3 text-right">
       <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
         Status
       </p>
       <p className="text-lg font-semibold text-slate-800">{status}</p>
     </div>
-  );
+  ) : (
+      <div className="rounded-lg bg-slate-50 px-5 py-3 text-right">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+          Status
+        </p>
+        <p className="text-lg font-semibold text-red-700">{status}</p>
+      </div>
+  )
 }
 
-export default function ElectionCard({ election, isPrimary = false }) {
+export default function ElectionCard({ election, isPrimary = false, callback}) {
   const navigate = useNavigate();
   
   // Stany potrzebne do obsługi wyników
@@ -21,6 +29,9 @@ export default function ElectionCard({ election, isPrimary = false }) {
   const [resultsData, setResultsData] = useState(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const [error, setError] = useState(null);
+
+
+  const {user} = useAuth();
 
   // Funkcja pobierająca wyniki z backendu
   const handleToggleResults = async () => {
@@ -107,30 +118,79 @@ export default function ElectionCard({ election, isPrimary = false }) {
       )}
 
       <div className="mt-6 flex flex-col gap-4 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm font-medium text-slate-400">
-          <LockIcon className="h-4 w-4" />
-          <span>Szyfrowanie End-to-End</span>
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
           {/* NOWY PRZYCISK DO WYNIKÓW */}
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-slate-100 text-slate-700 hover:bg-slate-200"
-            onClick={handleToggleResults}
-          >
-            {showResults ? "Ukryj wyniki" : "Zobacz wyniki"}
-          </button>
+          {election.status == "Nieaktywne" ? (
+              <>
+              <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-brand-700 text-white hover:bg-brand-800"
+                  onClick={handleToggleResults}
+              >
+                {showResults ? "Ukryj wyniki" : "Zobacz wyniki"}
+              </button>
 
-          {/* STARY PRZYCISK DO GŁOSOWANIA */}
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-brand-700 text-white hover:bg-brand-800"
-            onClick={() => navigate(`/election/${election.id}`)}
-          >
-            Przejdź do karty
-            <span>&#8594;</span>
-          </button>
+                <button
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    onClick={() => {
+                      if(election.status === "Aktywne") {
+                        navigate(`/election/${election.id}`)
+                      }
+                    }
+                    }
+                >
+                  Przejdź do karty
+                  <span>&#8594;</span>
+                </button>
+              </>
+          ) : (
+              <>
+                <button
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-slate-100 text-slate-700 hover:bg-slate-200"
+                >
+                  {showResults ? "Ukryj wyniki" : "Zobacz wyniki"}
+                </button>
+
+
+                <button
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-brand-700 text-white hover:bg-brand-800"
+                    onClick={() => {navigate(`/election/${election.id}`)}}
+                >
+                  Przejdź do karty
+                  <span>&#8594;</span>
+                </button>
+              </>
+          )}
+
+          {user.privilegeLevel > 1 ?
+              (
+                  <button
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-red-700 text-white border-2 hover:border-red-700 hover:bg-slate-100 hover:text-red-700"
+                      onClick={async () => {
+                        const res = await fetch("http://localhost:8005/deactivateVoting", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({votingId: election.id}),
+                        })
+                        if (res.ok) {
+                          console.log("Zmieniono status");
+                          callback();
+                        }
+                      }
+                  }
+                  >
+                    Zakoncz glosowanie
+                  </button>
+              ) : null}
+
+
         </div>
       </div>
     </article>

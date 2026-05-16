@@ -1,7 +1,6 @@
 export const navigationItems = [
   { id: "dashboard", label: "Pulpit", isActive: true, path: "/" },
-  { id: "verification", label: "Weryfikacja", isActive: false },
-  { id: "results", label: "Wyniki", isActive: false },
+  //{ id: "results", label: "Wyniki", isActive: false },
 ];
 
 export const systemHealth = {
