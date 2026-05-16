@@ -1,0 +1,15 @@
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\bin\Debug\net8.0\glosowanieTest.exe
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\bin\Debug\net8.0\glosowanieTest.deps.json
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\bin\Debug\net8.0\glosowanieTest.runtimeconfig.json
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\bin\Debug\net8.0\glosowanieTest.dll
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\bin\Debug\net8.0\glosowanieTest.pdb
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.GeneratedMSBuildEditorConfig.editorconfig
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.AssemblyInfoInputs.cache
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.AssemblyInfo.cs
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.csproj.CoreCompileInputs.cache
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.sourcelink.json
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.dll
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\refint\glosowanieTest.dll
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.pdb
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\glosowanieTest.genruntimeconfig.cache
+E:\Glosowanie\MPC_Voting_System\glosowanieTest\obj\Debug\net8.0\ref\glosowanieTest.dll

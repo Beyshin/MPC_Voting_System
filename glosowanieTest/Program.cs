@@ -8,34 +8,34 @@ namespace TajneGlosowanie
         static void Main(string[] args)
         {
             // KROK 1: Definiujemy liczby pierwsze przypisane do konkretnych kandydatów.
-            // Pamiętaj: muszą być większe niż maksymalna możliwa liczba głosujących!
-            BigInteger liczbaPierwszaKandydataA = 11; 
-            BigInteger liczbaPierwszaKandydataB = 13; 
-            BigInteger liczbaPierwszaKandydataC = 17; 
+            // Muszą być większe niż maksymalna możliwa liczba głosujących!
+            BigInteger liczbaPierwszaKandydataA = 11;
+            BigInteger liczbaPierwszaKandydataB = 13;
+            BigInteger liczbaPierwszaKandydataC = 17;
 
-            BigInteger[] liczbyPierwsze = new BigInteger[] 
-            { 
-                liczbaPierwszaKandydataA, 
-                liczbaPierwszaKandydataB, 
-                liczbaPierwszaKandydataC 
+            BigInteger[] liczbyPierwsze = new BigInteger[]
+            {
+                liczbaPierwszaKandydataA,
+                liczbaPierwszaKandydataB,
+                liczbaPierwszaKandydataC
             };
 
             SystemGlosowania system = new SystemGlosowania(liczbyPierwsze);
 
             Console.WriteLine("Rozpoczynamy głosowanie...");
 
-            // KROK 2 & 3: Wyborcy oddają głosy. 
+            // KROK 2 & 3: Wyborcy oddają głosy.
             // Indeks 0 to Kandydat A, 1 to Kandydat B, 2 to Kandydat C.
             system.OddajGlos(0); // Głos na A
             system.OddajGlos(0); // Głos na A
-            
+
             system.OddajGlos(1); // Głos na B
             system.OddajGlos(1); // Głos na B
             system.OddajGlos(1); // Głos na B
             system.OddajGlos(1);
             system.OddajGlos(1);
             system.OddajGlos(1);
-            
+
             system.OddajGlos(2); // Głos na C
 
             // KROK 4: Obliczanie ostatecznych wyników
@@ -48,7 +48,7 @@ namespace TajneGlosowanie
     {
         // Przechowuje liczby pierwsze przypisane każdemu kandydatowi (p1, p2, p3...)
         private BigInteger[] _liczbyPierwszeKandydatow;
-        
+
         // Zmienna 'M', czyli iloczyn wszystkich liczb pierwszych (p1 * p2 * p3)
         // Jest to górna granica naszego "matematycznego świata" w tym algorytmie.
         private BigInteger _iloczynWszystkichLiczbPierwszychM;
@@ -64,8 +64,7 @@ namespace TajneGlosowanie
         {
             _liczbyPierwszeKandydatow = liczbyPierwsze;
             _iloczynWszystkichLiczbPierwszychM = 1;
-            
-            // Mnożymy wszystkie liczby pierwsze przez siebie, żeby uzyskać 'M'
+
             foreach (var liczba in liczbyPierwsze)
             {
                 _iloczynWszystkichLiczbPierwszychM *= liczba;
@@ -83,22 +82,22 @@ namespace TajneGlosowanie
             }
 
             // 2. Znalezienie jednej wielkiej liczby X, która ukrywa w sobie te zera i jedynki.
+
             BigInteger zakodowanyGlosX = ChinskieTwierdzenieOResztach(_liczbyPierwszeKandydatow, wartosciGlosuDlaKandydatow);
 
-            // 3. Rozbicie zaszyfrowanego głosu X na 3 "tajne kawałki". 
+            // 3. Rozbicie zaszyfrowanego głosu X na 3 "tajne kawałki".
             // Kawałek 1 i 2 to całkowicie losowe liczby z zakresu od 0 do M.
+
             BigInteger fragmentGlosuDlaSerwera1 = LosujDuzaLiczbe(_iloczynWszystkichLiczbPierwszychM);
             BigInteger fragmentGlosuDlaSerwera2 = LosujDuzaLiczbe(_iloczynWszystkichLiczbPierwszychM);
-            
-            // Kawałek 3 jest wyliczany tak, aby po dodaniu do siebie wszystkich trzech fragmentów
-            // i wyciągnięciu modulo M, wynik wynosił dokładnie nasz zakodowanyGlosX.
             BigInteger fragmentGlosuDlaSerwera3 = (zakodowanyGlosX - fragmentGlosuDlaSerwera1 - fragmentGlosuDlaSerwera2) % _iloczynWszystkichLiczbPierwszychM;
-            
+
             // Poprawka na to, jak język C# traktuje liczby ujemne przy modulo.
-            if (fragmentGlosuDlaSerwera3 < 0) fragmentGlosuDlaSerwera3 += _iloczynWszystkichLiczbPierwszychM; 
+            if (fragmentGlosuDlaSerwera3 < 0) fragmentGlosuDlaSerwera3 += _iloczynWszystkichLiczbPierwszychM;
 
             // 4. Każdy z 3 serwerów dostaje swój fragment głosu i dodaje go do swojej puli.
             // Żaden z serwerów nie wie, co przechowują pozostałe dwa!
+
             _sumaKawaleczkowNaSerwerze1 += fragmentGlosuDlaSerwera1;
             _sumaKawaleczkowNaSerwerze2 += fragmentGlosuDlaSerwera2;
             _sumaKawaleczkowNaSerwerze3 += fragmentGlosuDlaSerwera3;
@@ -112,7 +111,7 @@ namespace TajneGlosowanie
             // Dodaje je do siebie i wyciąga modulo M. W ten sposób z magicznych, losowych liczb
             // wyłania się ostateczna suma wszystkich oddanych głosów (X_total).
             BigInteger wielkaSumaWszystkichZdekodowanychGlosow = (_sumaKawaleczkowNaSerwerze1 + _sumaKawaleczkowNaSerwerze2 + _sumaKawaleczkowNaSerwerze3) % _iloczynWszystkichLiczbPierwszychM;
-            
+
             if (wielkaSumaWszystkichZdekodowanychGlosow < 0) wielkaSumaWszystkichZdekodowanychGlosow += _iloczynWszystkichLiczbPierwszychM;
 
             Console.WriteLine($"\nOdtworzona wielka suma wszystkich głosów to: {wielkaSumaWszystkichZdekodowanychGlosow}");

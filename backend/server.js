@@ -95,14 +95,14 @@ const createServer = (ID, port) =>{
         //const userId = req.body.userId;
         const candidateVal = req.body.candidate_val;
         const votingId = req.body.votingId;
-        let rows = db.voteSelect(votingId, 123);
+        let rows = db.voteSelect(votingId, 300);
 
         if(rows.length > 0){
             //jesli ktos juz zagłosował
-            db.voteUpdate(votingId, 123, candidateVal);
+            db.voteUpdate(votingId, 300, candidateVal);
         }else{
             //jezeli ktos glosuje pierwszy raz
-            db.voteInsert(votingId, 123, candidateVal);
+            db.voteInsert(votingId, 300, candidateVal);
         }
 
         //console.log(`Serwer nr ${ID} otrzymał payload: \n\tcandidateVal :` + req.body.candidateVal + `\n\tvotingId :` + req.body.votingId);
