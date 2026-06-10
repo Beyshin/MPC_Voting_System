@@ -26,8 +26,7 @@ class PrimaryDatabase {
                 `CREATE TABLE IF NOT EXISTS Candidates(
                                                           candidate_id INTEGER PRIMARY KEY AUTOINCREMENT,
                                                           first_name TEXT NOT NULL,
-                                                          last_name TEXT NOT NULL,
-                                                          p_val INTEGER UNIQUE NOT NULL
+                                                          last_name TEXT NOT NULL
                  );`,
             )
             .run();
@@ -117,8 +116,7 @@ class PrimaryDatabase {
 
         const candidateSql = `SELECT c.candidate_id AS id,
                                      c.first_name AS firstName,
-                                     c.last_name AS lastName,
-                                     c.p_val as pValue
+                                     c.last_name AS lastName
                               FROM Candidates c
                                        JOIN Candidates_Votings cv ON c.candidate_id = cv.candidate_id
                               WHERE cv.voting_id = ?
@@ -146,11 +144,11 @@ class PrimaryDatabase {
         query.run(votingId);
     }
 
-    insertCandidate(firstName, lastName, pValue) {
+    insertCandidate(firstName, lastName) {
         const query = this.connection.prepare(
-            `INSERT OR IGNORE INTO Candidates(first_name, last_name, p_val)
-       VALUES (?, ?, ?)`);
-        query.run(firstName, lastName, pValue);
+            `INSERT OR IGNORE INTO Candidates(first_name, last_name)
+       VALUES (?, ?)`);
+        query.run(firstName, lastName);
 
         const idQuery = this.connection.prepare(
             `SELECT candidate_id AS id FROM Candidates WHERE first_name = ? AND last_name = ?`);
@@ -175,41 +173,37 @@ class PrimaryDatabase {
 
         const sampleElections = [
             {
-                name: "krajowe-2137",
-                title: "Wybory Krajowe 2025",
-                level: "Krajowe",
-                date_range: "12.03 - 15.04.2025",
-                description: "Wybory do Sejmu RP, które odbędą się w kwietniu 2025 roku.",
+                name: "Najlepszy wykładowca",
+                title: "Najlepszy wykładowca PCz",
+                level: "Ogólnouczelniane",
+                date_range: "10.06.2026",
+                description: "Wybory, które raz na zawsze zdecydują kto jest ulubieńcem studentów.",
                 status: "Aktywne",
                 candidates: [
-                    { firstName: "Adam", lastName: "Pierwszy", primeValue: 1000000007 },
-                    { firstName: "Paweł", lastName: "Drugi", primeValue: 1000000009 }
+                    { firstName: "dr Artur", lastName: "Jakubski"},
+                    { firstName: "dr inż. Jacek", lastName: "Piątkowski"},
+                    { firstName: "dr inż. Andrzej", lastName: "Grosser"},
+                    { firstName: "dr inż. Grzegorz", lastName: "Grodzki"},
+                    { firstName: "dr inż. Grzegorz", lastName: "Michalski"},
                 ],
             },
             {
-                name: "lokalne-glosowanie-420",
-                title: "Referendum Spółdzielcze Częstochowa",
-                level: "Lokalne",
-                date_range: "14.03 - 15.04.2025",
-                description: "",
+                name: "Najlepsza rasa psa",
+                title: "Najlepsza rasa psa 2026",
+                level: "Międzygalaktyczne",
+                date_range: "16.06.2026",
+                description: "Głosowanie, które rostrzygnie, która z poniższych ras jest najlepsza.",
                 status: "Aktywne",
                 candidates: [
-                    { firstName: "Adam", lastName: "Pierwszy", primeValue: 1000000007 },
-                    { firstName: "Paweł", lastName: "Drugi", primeValue: 1000000009 },
-                    { firstName: "Mariusz", lastName: "Trzeci", primeValue: 1000000021 }
-                ],
-            },
-            {
-                name: "nieaktywne glosowanie",
-                title: "Referendum Spółdzielcze Częstochowa",
-                level: "Lokalne",
-                date_range: "14.03 - 15.04.2025",
-                description: "",
-                status: "Nieaktywne",
-                candidates: [
-                    { firstName: "Adam", lastName: "Pierwszy", primeValue: 1000000007 },
-                    { firstName: "Paweł", lastName: "Drugi", primeValue: 1000000009 },
-                    { firstName: "Mariusz", lastName: "Trzeci", primeValue: 1000000021 }
+                    { firstName: "Border", lastName: "Collie"},
+                    { firstName: "Owczarek", lastName: "Niemiecki"},
+                    { firstName: "Jamnik", lastName: "" },
+                    { firstName: "Shih", lastName: "tzu" },
+                    { firstName: "Golden", lastName: "Retriver" },
+                    { firstName: "Beagle", lastName: "" },
+                    { firstName: "Pudel", lastName: "Duży" },
+                    { firstName: "Labrador", lastName: "" },
+                    { firstName: "Shiba", lastName: "Inu" }
                 ],
             }
         ];
@@ -225,7 +219,7 @@ class PrimaryDatabase {
             );
 
             for (const candidate of election.candidates) {
-                const candidateId = this.insertCandidate(candidate.firstName, candidate.lastName, candidate.primeValue);
+                const candidateId = this.insertCandidate(candidate.firstName, candidate.lastName);
                 this.insertCandidateVoting(candidateId, votingId);
             }
         }

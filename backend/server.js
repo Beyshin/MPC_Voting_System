@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const Database = require('./services/secondaryDb');
 
+const P = 10007;
+
 const createServer = (ID, port) =>{
     const app = express();
     app.use(cors());
@@ -71,13 +73,31 @@ const createServer = (ID, port) =>{
     //STATUS 500 -> SERVER ERROR
     //TODO: Mozna zmienic zeby tylko listowało wartości głosów, w celu wysłania samych wartości do serwera zliczającego
     app.get('/dataFromPollId', function (req, res) {
-        const pollId = req.query.id;
-        console.log("GET /dataFromPollId", pollId);
-        try{
+        const pollId = req.query.id; // <-- Brakowało tej linijki!
+        console.log("GET /dataFromPollId (MPC Aggregation)", pollId);
+
+        try {
             const data = db.getAllDataByPollId(pollId);
-            res.status(200).send(data);
-        }catch(err){
-            res.status(500).send(`nie udalo sie uzyskac danych o podanym id (${pollId}): ` + err);
+
+            // Zabezpieczenie: jeśli nikt jeszcze nie zagłosował
+            if (!data || data.length === 0) {
+                return res.status(200).send({ pollId, encryptedTotals: [] });
+            }
+
+            const numCandidates = JSON.parse(data[0].value).length;
+            let encryptedTotals = new Array(numCandidates).fill(0);
+
+            data.forEach(row => {
+                const userShares = JSON.parse(row.value);
+                for (let i = 0; i < numCandidates; i++) {
+                    encryptedTotals[i] = (encryptedTotals[i] + userShares[i]) % P;
+                }
+            });
+            res.status(200).send({ pollId, encryptedTotals });
+
+        } catch(err) {
+            console.error(err);
+            res.status(500).send(`Nie udalo sie zsumowac danych o id (${pollId}): ` + err);
         }
     })
 
@@ -87,33 +107,28 @@ const createServer = (ID, port) =>{
         res.status(200).send("Server healthy");
     })
 
-
     app.post('/vote', (req, res) => {
-        // Upewnij się, że w pliku głównym masz dodane: app.use(express.json());
+        const { userId, votingId, shares } = req.body;
 
-        // Pobieramy prawdziwe dane wysłane z Reacta
-        const userId = req.body.userId; // <--- Teraz pobieramy prawdziwe ID użytkownika
-        const candidateVal = req.body.value; // <--- Zmiana z candidate_val na value!
-        const votingId = req.body.votingId;
-
-        console.log(`POST /vote | Server: ${ID} | User: ${userId} | Vote: ${candidateVal}`);
-
-        // Zabezpieczenie przed brakującymi danymi (żeby nie wpisać znowu null'a)
-        if (candidateVal === undefined || !userId) {
-            return res.status(400).send({ message: "Brak wymaganych danych (userId lub value)" });
+        // Sprawdzamy czy mamy shares zamist candidateVal
+        if (!shares || !Array.isArray(shares) || !userId) {
+            return res.status(400).send({ message: "Brak wymaganych danych (userId lub tablicy shares)" });
         }
 
-        // Sprawdzamy czy TEN konkretny użytkownik już głosował w TYCH wyborach
+        const sharesString = JSON.stringify(shares);
+
+        // Zmiana w logach: logujemy wektor zamiast starej wartości
+        console.log(`POST /vote | Server: ${ID} | User: ${userId} | Shares: ${sharesString}`);
+
         let rows = db.voteSelect(votingId, userId);
 
         if (rows.length > 0) {
-            // Jeśli ktoś już zagłosował, nadpisujemy jego fragment
-            db.voteUpdate(votingId, userId, candidateVal);
-            console.log(`Zaktualizowano głos dla usera: ${userId}`);
+            // Wszędzie poniżej podmieniamy candidateVal na sharesString
+            db.voteUpdate(votingId, userId, sharesString);
+            console.log(`Zaktualizowano udziały dla usera: ${userId}`);
         } else {
-            // Jeżeli ktoś głosuje pierwszy raz
-            db.voteInsert(votingId, userId, candidateVal);
-            console.log(`Dodano nowy głos dla usera: ${userId}`);
+            db.voteInsert(votingId, userId, sharesString);
+            console.log(`Dodano nowe udziały dla usera: ${userId}`);
         }
 
         res.status(200).send();

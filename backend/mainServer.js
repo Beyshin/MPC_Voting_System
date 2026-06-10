@@ -158,70 +158,50 @@ const createMainServer = (port) => {
     // Endpoint do zliczania wyników głosowania
     app.get('/results/:id', async (req, res) => {
         const pollId = req.params.id;
+        const P = 10007;
 
         try {
-            // 1. Pobieramy informacje o kandydatach
             const election = db.getElectionById(pollId);
             if (!election) {
                 return res.status(404).send({ message: "Nie znaleziono głosowania" });
             }
 
-            // 2. Pobieramy fragmenty głosów z 3 serwerów
             const [res1, res2, res3] = await Promise.all([
                 fetch(`http://localhost:8000/dataFromPollId?id=${pollId}`).then(r => r.json()),
                 fetch(`http://localhost:8001/dataFromPollId?id=${pollId}`).then(r => r.json()),
                 fetch(`http://localhost:8002/dataFromPollId?id=${pollId}`).then(r => r.json())
             ]);
 
-            const reconstructedVotes = {};
+            if (!res1.encryptedTotals || !res2.encryptedTotals || !res3.encryptedTotals) {
+                return res.status(400).send({ message: "Brak danych o głosach z serwerów obliczeniowych." });
+            }
 
-            const processServerData = (serverData) => {
-                serverData.forEach(row => {
-                    if (reconstructedVotes[row.user_id] === undefined) {
-                        reconstructedVotes[row.user_id] = 0n;
-                    }
-                    reconstructedVotes[row.user_id] += BigInt(row.value);
+            const numCandidates = election.candidates.length;
+            const finalResults = [];
+            let totalVotes = 0;
+
+
+            for (let i = 0; i < numCandidates; i++) {
+                let candidateVotes = (res1.encryptedTotals[i] + res2.encryptedTotals[i] + res3.encryptedTotals[i]) % P;
+
+                if (candidateVotes < 0) candidateVotes += P;
+
+                finalResults.push({
+                    firstName: election.candidates[i].firstName,
+                    lastName: election.candidates[i].lastName,
+                    votes: candidateVotes
                 });
-            };
 
-            processServerData(res1);
-            processServerData(res2);
-            processServerData(res3);
-            console.log("Zrekonstruowane głosy użytkowników (BigInt):", reconstructedVotes);
+                totalVotes += candidateVotes;
+            }
 
-            // 4. Przygotowujemy tablicę wyników
-            const results = {};
-            election.candidates.forEach(c => {
-                results[c.id] = {
-                    firstName: c.firstName,
-                    lastName: c.lastName,
-                    primeValue: BigInt(c.pValue),
-                    votes: 0
-                };
-            });
+            console.log(`Wyniki zrekonstruowane pomyślnie dla głosowania ${pollId}`);
 
-            let invalidVotes = 0;
-
-            // 5. Sprawdzamy zrekonstruowane głosy
-            Object.entries(reconstructedVotes).forEach(([userId, sumValue]) => {
-                const votedCandidate = Object.values(results).find(c => c.primeValue === sumValue);
-                if (votedCandidate) {
-                    votedCandidate.votes += 1;
-                } else {
-                    invalidVotes += 1;
-                }
-            });
-
-            // 6. Zwracamy wyniki głosowania
             res.status(200).send({
                 electionTitle: election.title,
-                results: Object.values(results).map(c => ({
-                    firstName: c.firstName,
-                    lastName: c.lastName,
-                    votes: c.votes
-                })),
-                invalidVotes: invalidVotes,
-                totalVotes: Object.keys(reconstructedVotes).length
+                results: finalResults,
+                totalVotes: totalVotes,
+                invalidVotes: 0
             });
 
         } catch (err) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import {useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Layout from "../components/layout/Layout.jsx";
 import {useAuth} from "../context/AuthContext.jsx";
 
@@ -13,6 +13,7 @@ export default function ElectionPage() {
     const [isLoadingElection, setIsLoadingElection] = useState(false);
     const [loadingError, setLoadingError] = useState(null);
     const {user} = useAuth();
+    const navigate = useNavigate();
 
     const electionId = location.state?.id ?? id ?? searchParams.get("id");
 
@@ -44,7 +45,7 @@ export default function ElectionPage() {
     loadElection();
 }, [electionId, location.state]);
 
-    const sendVote = async() => {
+    const sendVote = async () => {
         if (selected === null) {
             alert("Proszę wybrać kandydata");
             return;
@@ -52,35 +53,37 @@ export default function ElectionPage() {
 
         setIsLoading(true);
         try {
-            const candidate = election.candidates.find(c => c.id === selected);
-            if (!candidate) {
+            const candidateIndex = election.candidates.findIndex(c => c.id === selected);
+            if (candidateIndex === -1) {
                 throw new Error("Nie znaleziono wybranego kandydata");
             }
 
-            const candidatePrime = Number(candidate.pValue ?? candidate.p_value ?? selected);
-            if (!Number.isInteger(candidatePrime) || candidatePrime <= 0) {
-                throw new Error("Nieprawidłowa wartość liczby pierwszej kandydata");
-            }
+            const P = 10007;
 
-            console.log(`Wysyłanie głosu na kandydata: ${selected}, prime: ${candidatePrime}`);
+            const voteVector = election.candidates.map((_, index) => index === candidateIndex ? 1 : 0);
+            console.log(`Wybrano kandydata na pozycji ${candidateIndex}. Wektor: [${voteVector}]`);
 
-            // Obliczamy fragmenty
-            const fragments = [];
-            const first = Math.floor(Math.random() * (candidatePrime - 2)) + 1;
-            const second = Math.floor(Math.random() * (candidatePrime - 1 - first)) + 1;
-            const third = candidatePrime - first - second;
-            fragments.push(first, second, third);
+            const serverShares = [[], [], []];
+
+            voteVector.forEach(voteValue => {
+                const share1 = Math.floor(Math.random() * P);
+                const share2 = Math.floor(Math.random() * P);
+
+                let share3 = (voteValue - share1 - share2) % P;
+                if (share3 < 0) share3 += P;
+
+                serverShares[0].push(share1);
+                serverShares[1].push(share2);
+                serverShares[2].push(share3);
+            });
 
             const currentUserId = user.id;
 
-            for (let i = 0; i < fragments.length; i++) {
+            for (let i = 0; i < 3; i++) {
                 const payload = {
                     votingId: election.id,
                     userId: currentUserId,
-                    value: fragments[i],
-
-                    candidateId: candidate.id,
-                    primeValue: candidatePrime
+                    shares: serverShares[i]
                 };
 
                 const response = await fetch(`http://localhost:800${i}/vote`, {
@@ -92,13 +95,14 @@ export default function ElectionPage() {
                 });
 
                 if (response.ok) {
-                    console.log(`Server ${i + 1} (port 800${i}) przyjął fragment ${payload.value}`);
+                    console.log(`Server ${i + 1} (port 800${i}) przyjął udziały: [${payload.shares}]`);
                 } else {
                     console.error(`Błąd na serwerze ${i + 1}`);
                 }
             }
 
             alert("Głos został pomyślnie oddany!");
+            navigate("/");
             setSelected(null);
         } catch (err) {
             console.error("Błąd przy wysyłaniu głosu:", err);

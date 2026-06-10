@@ -15,7 +15,7 @@ class Database {
             `CREATE TABLE IF NOT EXISTS data(
                 poll_id INTEGER,
                 user_id INTEGER,
-                value INTEGER,
+                value TEXT,
                 PRIMARY KEY(poll_id, user_id)
                 )`
         ).run();
