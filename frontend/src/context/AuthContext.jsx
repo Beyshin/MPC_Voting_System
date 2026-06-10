@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await fetch('http://localhost:8005/checkAuth', {
+                const response = await fetch('https://mpc.alexandria-pcz.com/checkAuth', {
                     method: 'GET',
                     credentials: 'include'
                 });
