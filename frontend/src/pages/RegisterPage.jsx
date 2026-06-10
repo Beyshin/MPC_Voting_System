@@ -18,7 +18,7 @@ export default function RegisterPage() {
     const registerUser = (e) => {
         e.preventDefault();
             if(password === checkPassword) {
-                const req = fetch("http://localhost:8005/registerUser", {
+                const req = fetch("https://mpc.alexandria-pcz.com/registerUser", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

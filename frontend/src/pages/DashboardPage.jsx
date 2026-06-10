@@ -9,7 +9,7 @@ export default function DashboardPage() {
 
     const loadElections = async () => {
         try {
-            const response = await fetch("http://localhost:8005/elections");
+            const response = await fetch("https://mpc.alexandria-pcz.com/elections");
             if (!response.ok) {
                 throw new Error("Błąd przy pobieraniu wyborów");
             }

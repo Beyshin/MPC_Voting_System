@@ -16,7 +16,7 @@ export default function HealthPanel({ systemHealth }) {
     for(let i = 0; i < 3; i++) {
       try{
         //Request port po porcie 8000, 8001, 8002
-        const request = await fetch(`http://localhost:800${i}/health`, {
+        const request = await fetch(`https://mpc.alexandria-pcz.com/node${i+1}/health`, {
           method: "GET",
         });
 

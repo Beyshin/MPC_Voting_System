@@ -30,7 +30,7 @@ export default function ElectionPage() {
     const loadElection = async () => {
         setIsLoadingElection(true);
         try {
-            const response = await fetch(`http://localhost:8005/elections/${electionId}`);
+            const response = await fetch(`https://mpc.alexandria-pcz.com/elections/${electionId}`);
             if (!response.ok) throw new Error("Nie można pobrać danych wyborów");
             const data = await response.json();
             setElection(data);
@@ -86,7 +86,7 @@ export default function ElectionPage() {
                     shares: serverShares[i]
                 };
 
-                const response = await fetch(`http://localhost:800${i}/vote`, {
+                const response = await fetch(`https://mpc.alexandria-pcz.com/node${i+1}/vote`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

@@ -15,7 +15,7 @@ export default function LoginPage() {
     const loginUser = async (e) => {
         e.preventDefault();
         try{
-            const res = await fetch("http://localhost:8005/loginUser", {
+            const res = await fetch("https://mpc.alexandria-pcz.com/loginUser", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export default function LoginPage() {
             })
 
             if (res.ok) {
-                const response = await fetch('http://localhost:8005/checkAuth', {
+                const response = await fetch('https://mpc.alexandria-pcz.com/checkAuth', {
                     method: 'GET',
                     credentials: 'include'
                 });

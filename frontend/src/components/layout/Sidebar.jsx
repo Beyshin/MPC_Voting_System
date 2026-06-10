@@ -24,7 +24,7 @@ export default function Sidebar({ items }) {
 
     const logout = async () =>{
         try {
-             await fetch("http://localhost:8005/logout", {
+             await fetch("https://mpc.alexandria-pcz.com/logout", {
                 method: "POST",
                 credentials: "include"
             });

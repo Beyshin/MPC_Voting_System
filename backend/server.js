@@ -6,12 +6,18 @@ const P = 10007;
 
 const createServer = (ID, port) =>{
     const app = express();
-    app.use(cors());
+
+    const corsOptions = {
+        origin: 'https://glosowanie.alexandria-pcz.com',
+        optionsSuccessStatus: 200
+    }
+    app.use(cors(corsOptions));
+
     app.use(express.json());
 
     const db = new Database(ID);
 
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
         console.log(`Server nr ${ID} is running on port ${port}`);
     })
 
