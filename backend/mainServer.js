@@ -11,8 +11,9 @@ const createMainServer = (port) => {
     const app = express();
     app.use(cors({
         //TODO: ZMIENIC CORSA
-        origin: ["https://glosowanie.alexandria-pcz.com/"],
-        credentials: true
+        origin: "https://glosowanie.alexandria-pcz.com/",
+        credentials: true,
+        optionsSuccessStatus: 200
     }));
     app.use(express.json());
     app.use(cookieParser());
@@ -90,7 +91,8 @@ const createMainServer = (port) => {
                 res.cookie("token", token, {
                     httpOnly: true,
                     secure: true,
-                    sameSite: "strict",
+                    sameSite: "none",
+                    domain: '.alexandria-pcz.com',
                     maxAge: 60 * 60 * 1000 // godzina
                 });
 
