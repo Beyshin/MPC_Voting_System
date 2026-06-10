@@ -49,7 +49,7 @@ export default function ElectionCard({ election, isPrimary = false, callback}) {
       setIsLoadingResults(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:8005/results/${election.id}`);
+        const response = await fetch(`https://mpc.alexandria-pcz.com/results/${election.id}`);
         if (!response.ok) {
           throw new Error("Nie udało się pobrać wyników");
         }
@@ -172,7 +172,7 @@ export default function ElectionCard({ election, isPrimary = false, callback}) {
                       type="button"
                       className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold uppercase tracking-wide transition bg-red-700 text-white border-2 hover:border-red-700 hover:bg-slate-100 hover:text-red-700"
                       onClick={async () => {
-                        const res = await fetch("http://localhost:8005/deactivateVoting", {
+                        const res = await fetch("https://mpc.alexandria-pcz.com/deactivateVoting", {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
