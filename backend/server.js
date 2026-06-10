@@ -9,6 +9,7 @@ const createServer = (ID, port) =>{
 
     const corsOptions = {
         origin: 'https://glosowanie.alexandria-pcz.com',
+        credentials: true,
         optionsSuccessStatus: 200
     }
     app.use(cors(corsOptions));
