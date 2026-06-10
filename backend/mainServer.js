@@ -11,7 +11,7 @@ const createMainServer = (port) => {
     const app = express();
     app.use(cors({
         //TODO: ZMIENIC CORSA
-        origin: ["http://localhost:5173", "http://localhost:5174"],
+        origin: ["https://glosowanie.alexandria-pcz.com/"],
         credentials: true
     }));
     app.use(express.json());
